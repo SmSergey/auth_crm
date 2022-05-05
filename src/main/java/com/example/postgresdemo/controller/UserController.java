@@ -6,10 +6,39 @@ import com.example.postgresdemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.Valid;
 import java.lang.reflect.Field;
+import java.util.List;
+
+
+class Response {
+    private Object data;
+    private Boolean shouldNotify = false;
+    Response(Object item){
+        this.data = item;
+    }
+
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public Boolean getShouldNotify() {
+        return shouldNotify;
+    }
+
+    public void setShouldNotify(Boolean shouldNotify) {
+        this.shouldNotify = shouldNotify;
+    }
+}
 
 
 @RestController
@@ -18,13 +47,20 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("")
-    public Page<User> getUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public ResponseEntity<Response> getUsers(Pageable pageable) {
+       List<User> users =  userRepository.findAll();
+        Response resp = new Response(users);
+       return  ResponseEntity.ok(resp);
     }
 
     @PostMapping("")
     public User createUser(@Valid @RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println("INIT  " + user.getPassword());
         return userRepository.save(user);
     }
 
