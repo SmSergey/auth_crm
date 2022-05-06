@@ -1,5 +1,6 @@
 package com.example.postgresdemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.hibernate.annotations.*;
 
@@ -24,6 +25,9 @@ public class User {
             initialValue = 1000
     )
     private Long id;
+    @NotBlank
+    @Column(columnDefinition = "text", unique = true)
+    private String _id;
 
     @NotBlank
     @Column(columnDefinition = "text", unique = true)
@@ -55,7 +59,7 @@ public class User {
 
     @Type(type = "json")
     @Column(columnDefinition = "jsonb")
-    private String permissions;
+        private String permissions;
 
 
     @Column(columnDefinition = "boolean default false")
@@ -98,6 +102,7 @@ public class User {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getVerificationCode() {
         return verificationCode;
     }
@@ -106,6 +111,7 @@ public class User {
         this.verificationCode = verificationCode;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -200,5 +206,13 @@ public class User {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }

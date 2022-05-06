@@ -1,44 +1,22 @@
 package com.example.postgresdemo.controller;
 
+import com.example.postgresdemo.dto.CreateUserDTO;
 import com.example.postgresdemo.exception.ResourceNotFoundException;
 import com.example.postgresdemo.model.User;
 import com.example.postgresdemo.repository.UserRepository;
+import com.example.postgresdemo.util.Response;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.bson.types.ObjectId;
 
 import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.List;
-
-
-class Response {
-    private Object data;
-    private Boolean shouldNotify = false;
-    Response(Object item){
-        this.data = item;
-    }
-
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public Boolean getShouldNotify() {
-        return shouldNotify;
-    }
-
-    public void setShouldNotify(Boolean shouldNotify) {
-        this.shouldNotify = shouldNotify;
-    }
-}
 
 
 @RestController
@@ -52,22 +30,25 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<Response> getUsers(Pageable pageable) {
-       List<User> users =  userRepository.findAll();
+        List<User> users = userRepository.findAll();
         Response resp = new Response(users);
-       return  ResponseEntity.ok(resp);
+        return ResponseEntity.ok(resp);
     }
 
     @PostMapping("")
-    public User createUser(@Valid @RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        System.out.println("INIT  " + user.getPassword());
+    public User createUser(@Valid @RequestBody CreateUserDTO params) throws IllegalAccessException, InstantiationException {
+        User user = new User();
+        user = mergeDiff(user, params);
+        user.setPassword(passwordEncoder.encode(params.getPassword()));
+        user.set_id(new ObjectId().toString());
+        System.out.println(user.getPassword());
         return userRepository.save(user);
     }
 
     @PutMapping("/{userId}")
     public User updateUser(@PathVariable Long userId, @Valid @RequestBody User user) throws Exception {
         System.out.println("start");
-        return userRepository.findById (userId).map (item -> {
+        return userRepository.findById(userId).map(item -> {
                     try {
                         User data = merge(item, user);
                         return userRepository.save(data);
@@ -80,7 +61,7 @@ public class UserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
     }
 
-//    @PostMapping("")
+    //    @PostMapping("")
 //    public Answer addAnswer(@PathVariable Long questionId,
 //                            @Valid @RequestBody Answer answer) {
 //        return questionRepository.findById(questionId)
@@ -134,6 +115,26 @@ public class UserController {
                         break;
                     default:
                         field.set(merged, (remoteValue != null) ? remoteValue : localValue);
+                }
+            }
+        }
+        return (T) merged;
+    }
+
+    public <T, K> T mergeDiff(T local, K remote) throws IllegalAccessException, InstantiationException {
+        Class<?> clazz = local.getClass();
+        Class<?> classRemote = remote.getClass();
+        Object merged = clazz.newInstance();
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+            for (Field fieldRem : classRemote.getDeclaredFields()) {
+                fieldRem.setAccessible(true);
+                System.out.println(fieldRem + "    " + field);
+                if (field.getName().equals(fieldRem.getName())) {
+                    Object localValue = field.get(local);
+                    Object remoteValue = fieldRem.get(remote);
+
+                    field.set(merged, (remoteValue != null) ? remoteValue : localValue);
                 }
             }
         }

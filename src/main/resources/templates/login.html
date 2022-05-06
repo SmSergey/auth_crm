@@ -1,0 +1,718 @@
+
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="http://fin.exceed-team.com/media/meta-icons/favicon.ico">
+    <title>AUTH CRM</title>
+
+    <style>
+        .Content > div {
+            display: flex;
+            flex: 1 1;
+            flex-direction: column;
+        }
+        .PageContent {
+            max-width: 100%;
+            padding: 10px;
+            max-height: calc(100vh - 64px);
+            overflow-y: scroll;
+        }
+        .Login {
+            width: 100%;
+            padding-top: 25vh;
+        }
+        .Login-logo {
+            width: 260px;
+            height: 50px;
+            margin: auto;
+            background: url(http://fin.exceed-team.com/media/images/exceed-team.png) left -3px top -316px;
+        }
+        .Login-form {
+            height: fit-content;
+            margin: auto;
+            padding: 25px;
+            max-width: 420px;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            flex: 1 1;
+        }
+        .Login-logo {
+            width: 260px;
+            height: 50px;
+            margin: auto;
+            background: url(http://fin.exceed-team.com/media/images/exceed-team.png) left -3px top -316px; }
+        .Login-input {
+            margin: 15px 0;
+        }
+        .Login-btn {
+            width: 100%;
+            border: none;
+            outline: none;
+        }
+
+        .MuiFormControl-root {
+            border: 0;
+            margin: 0;
+            display: inline-flex;
+            padding: 0;
+            position: relative;
+            min-width: 0;
+            flex-direction: column;
+            vertical-align: top;
+        }
+        .MuiFormControl-marginNormal {
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+        .MuiFormControl-marginDense {
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+        .MuiFormControl-fullWidth {
+            width: 100%;
+        }
+
+    </style>
+
+    <style data-jss="" data-meta="MuiButton">
+        .MuiButton-root {
+            color: rgba(0, 0, 0, 0.87);
+            padding: 6px 16px;
+            font-size: 0.875rem;
+            min-width: 64px;
+            box-sizing: border-box;
+            transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 500;
+            line-height: 1.75;
+            border-radius: 4px;
+            letter-spacing: 0.02857em;
+            text-transform: uppercase;
+        }
+        .MuiButton-root:hover {
+            text-decoration: none;
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        .MuiButton-root.Mui-disabled {
+            color: rgba(0, 0, 0, 0.26);
+        }
+        @media (hover: none) {
+            .MuiButton-root:hover {
+                background-color: transparent;
+            }
+        }
+        .MuiButton-root:hover.Mui-disabled {
+            background-color: transparent;
+        }
+        .MuiButton-label {
+            width: 100%;
+            display: inherit;
+            align-items: inherit;
+            justify-content: inherit;
+        }
+        .MuiButton-text {
+            padding: 6px 8px;
+        }
+        .MuiButton-textPrimary {
+            color: #3f51b5;
+        }
+        .MuiButton-textPrimary:hover {
+            background-color: rgba(63, 81, 181, 0.04);
+        }
+        @media (hover: none) {
+            .MuiButton-textPrimary:hover {
+                background-color: transparent;
+            }
+        }
+        .MuiButton-textSecondary {
+            color: #f50057;
+        }
+        .MuiButton-textSecondary:hover {
+            background-color: rgba(245, 0, 87, 0.04);
+        }
+        @media (hover: none) {
+            .MuiButton-textSecondary:hover {
+                background-color: transparent;
+            }
+        }
+        .MuiButton-outlined {
+            border: 1px solid rgba(0, 0, 0, 0.23);
+            padding: 5px 15px;
+        }
+        .MuiButton-outlined.Mui-disabled {
+            border: 1px solid rgba(0, 0, 0, 0.12);
+        }
+        .MuiButton-outlinedPrimary {
+            color: #3f51b5;
+            border: 1px solid rgba(63, 81, 181, 0.5);
+        }
+        .MuiButton-outlinedPrimary:hover {
+            border: 1px solid #3f51b5;
+            background-color: rgba(63, 81, 181, 0.04);
+        }
+        @media (hover: none) {
+            .MuiButton-outlinedPrimary:hover {
+                background-color: transparent;
+            }
+        }
+        .MuiButton-outlinedSecondary {
+            color: #f50057;
+            border: 1px solid rgba(245, 0, 87, 0.5);
+        }
+        .MuiButton-outlinedSecondary:hover {
+            border: 1px solid #f50057;
+            background-color: rgba(245, 0, 87, 0.04);
+        }
+        .MuiButton-outlinedSecondary.Mui-disabled {
+            border: 1px solid rgba(0, 0, 0, 0.26);
+        }
+        @media (hover: none) {
+            .MuiButton-outlinedSecondary:hover {
+                background-color: transparent;
+            }
+        }
+        .MuiButton-contained {
+            color: rgba(0, 0, 0, 0.87);
+            box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
+            background-color: #e0e0e0;
+        }
+        .MuiButton-contained:hover {
+            box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+            background-color: #d5d5d5;
+        }
+        .MuiButton-contained.Mui-focusVisible {
+            box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12);
+        }
+        .MuiButton-contained:active {
+            box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12);
+        }
+        .MuiButton-contained.Mui-disabled {
+            color: rgba(0, 0, 0, 0.26);
+            box-shadow: none;
+            background-color: rgba(0, 0, 0, 0.12);
+        }
+        @media (hover: none) {
+            .MuiButton-contained:hover {
+                box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
+                background-color: #e0e0e0;
+            }
+        }
+        .MuiButton-contained:hover.Mui-disabled {
+            background-color: rgba(0, 0, 0, 0.12);
+        }
+        .MuiButton-containedPrimary {
+            color: #fff;
+            background-color: #3f51b5;
+        }
+        .MuiButton-containedPrimary:hover {
+            background-color: #303f9f;
+        }
+        @media (hover: none) {
+            .MuiButton-containedPrimary:hover {
+                background-color: #3f51b5;
+            }
+        }
+        .MuiButton-containedSecondary {
+            color: #fff;
+            background-color: #f50057;
+        }
+        .MuiButton-containedSecondary:hover {
+            background-color: #c51162;
+        }
+        @media (hover: none) {
+            .MuiButton-containedSecondary:hover {
+                background-color: #f50057;
+            }
+        }
+        .MuiButton-disableElevation {
+            box-shadow: none;
+        }
+        .MuiButton-disableElevation:hover {
+            box-shadow: none;
+        }
+        .MuiButton-disableElevation.Mui-focusVisible {
+            box-shadow: none;
+        }
+        .MuiButton-disableElevation:active {
+            box-shadow: none;
+        }
+        .MuiButton-disableElevation.Mui-disabled {
+            box-shadow: none;
+        }
+        .MuiButton-colorInherit {
+            color: inherit;
+            border-color: currentColor;
+        }
+        .MuiButton-textSizeSmall {
+            padding: 4px 5px;
+            font-size: 0.8125rem;
+        }
+        .MuiButton-textSizeLarge {
+            padding: 8px 11px;
+            font-size: 0.9375rem;
+        }
+        .MuiButton-outlinedSizeSmall {
+            padding: 3px 9px;
+            font-size: 0.8125rem;
+        }
+        .MuiButton-outlinedSizeLarge {
+            padding: 7px 21px;
+            font-size: 0.9375rem;
+        }
+        .MuiButton-containedSizeSmall {
+            padding: 4px 10px;
+            font-size: 0.8125rem;
+        }
+        .MuiButton-containedSizeLarge {
+            padding: 8px 22px;
+            font-size: 0.9375rem;
+        }
+        .MuiButton-fullWidth {
+            width: 100%;
+        }
+        .MuiButton-startIcon {
+            display: inherit;
+            margin-left: -4px;
+            margin-right: 8px;
+        }
+        .MuiButton-startIcon.MuiButton-iconSizeSmall {
+            margin-left: -2px;
+        }
+        .MuiButton-endIcon {
+            display: inherit;
+            margin-left: 8px;
+            margin-right: -4px;
+        }
+        .MuiButton-endIcon.MuiButton-iconSizeSmall {
+            margin-right: -2px;
+        }
+        .MuiButton-iconSizeSmall > *:first-child {
+            font-size: 18px;
+        }
+        .MuiButton-iconSizeMedium > *:first-child {
+            font-size: 20px;
+        }
+        .MuiButton-iconSizeLarge > *:first-child {
+            font-size: 22px;
+        }
+    </style>
+    <style data-jss="" data-meta="MuiInputBase">
+        @-webkit-keyframes mui-auto-fill {}
+        @-webkit-keyframes mui-auto-fill-cancel {}
+        .MuiInputBase-root {
+            color: rgba(0, 0, 0, 0.87);
+            cursor: text;
+            display: inline-flex;
+            position: relative;
+            font-size: 1rem;
+            box-sizing: border-box;
+            align-items: center;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 400;
+            line-height: 1.1876em;
+            letter-spacing: 0.00938em;
+        }
+        .MuiInputBase-root.Mui-disabled {
+            color: rgba(0, 0, 0, 0.38);
+            cursor: default;
+        }
+        .MuiInputBase-multiline {
+            padding: 6px 0 7px;
+        }
+        .MuiInputBase-multiline.MuiInputBase-marginDense {
+            padding-top: 3px;
+        }
+        .MuiInputBase-fullWidth {
+            width: 100%;
+        }
+        .MuiInputBase-input {
+            font: inherit;
+            color: currentColor;
+            width: 100%;
+            border: 0;
+            height: 1.1876em;
+            margin: 0;
+            display: block;
+            padding: 6px 0 7px;
+            min-width: 0;
+            background: none;
+            box-sizing: content-box;
+            animation-name: mui-auto-fill-cancel;
+            letter-spacing: inherit;
+            animation-duration: 10ms;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .MuiInputBase-input::-webkit-input-placeholder {
+            color: currentColor;
+            opacity: 0.42;
+            transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        }
+        .MuiInputBase-input::-moz-placeholder {
+            color: currentColor;
+            opacity: 0.42;
+            transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        }
+        .MuiInputBase-input:-ms-input-placeholder {
+            color: currentColor;
+            opacity: 0.42;
+            transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        }
+        .MuiInputBase-input::-ms-input-placeholder {
+            color: currentColor;
+            opacity: 0.42;
+            transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        }
+        .MuiInputBase-input:focus {
+            outline: 0;
+        }
+        .MuiInputBase-input:invalid {
+            box-shadow: none;
+        }
+        .MuiInputBase-input::-webkit-search-decoration {
+            -webkit-appearance: none;
+        }
+        .MuiInputBase-input.Mui-disabled {
+            opacity: 1;
+        }
+        .MuiInputBase-input:-webkit-autofill {
+            animation-name: mui-auto-fill;
+            animation-duration: 5000s;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input::-webkit-input-placeholder {
+            opacity: 0 !important;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input::-moz-placeholder {
+            opacity: 0 !important;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input:-ms-input-placeholder {
+            opacity: 0 !important;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input::-ms-input-placeholder {
+            opacity: 0 !important;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input:focus::-webkit-input-placeholder {
+            opacity: 0.42;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input:focus::-moz-placeholder {
+            opacity: 0.42;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input:focus:-ms-input-placeholder {
+            opacity: 0.42;
+        }
+        label[data-shrink=false] + .MuiInputBase-formControl .MuiInputBase-input:focus::-ms-input-placeholder {
+            opacity: 0.42;
+        }
+        .MuiInputBase-inputMarginDense {
+            padding-top: 3px;
+        }
+        .MuiInputBase-inputMultiline {
+            height: auto;
+            resize: none;
+            padding: 0;
+        }
+        .MuiInputBase-inputTypeSearch {
+            -moz-appearance: textfield;
+            -webkit-appearance: textfield;
+        }
+    </style>
+    <style data-jss="" data-meta="MuiInput">
+        .MuiInput-root {
+            position: relative;
+        }
+        label + .MuiInput-formControl {
+            margin-top: 16px;
+        }
+        .MuiInput-colorSecondary.MuiInput-underline:after {
+            border-bottom-color: #f50057;
+        }
+        .MuiInput-underline:after {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            content: "";
+            position: absolute;
+            transform: scaleX(0);
+            transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+            border-bottom: 2px solid #3f51b5;
+            pointer-events: none;
+        }
+        .MuiInput-underline.Mui-focused:after {
+            transform: scaleX(1);
+        }
+        .MuiInput-underline.Mui-error:after {
+            transform: scaleX(1);
+            border-bottom-color: #f44336;
+        }
+        .MuiInput-underline:before {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+            transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+            pointer-events: none;
+        }
+        .MuiInput-underline:hover:not(.Mui-disabled):before {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.87);
+        }
+        .MuiInput-underline.Mui-disabled:before {
+            border-bottom-style: dotted;
+        }
+        @media (hover: none) {
+            .MuiInput-underline:hover:not(.Mui-disabled):before {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+            }
+        }
+    </style>
+    <style data-jss="" data-meta="MuiFormLabel">
+        .MuiFormLabel-root {
+            color: rgba(0, 0, 0, 0.54);
+            padding: 0;
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 400;
+            line-height: 1;
+            letter-spacing: 0.00938em;
+        }
+        .MuiFormLabel-root.Mui-focused {
+            color: #3f51b5;
+        }
+        .MuiFormLabel-root.Mui-disabled {
+            color: rgba(0, 0, 0, 0.38);
+        }
+        .MuiFormLabel-root.Mui-error {
+            color: #f44336;
+        }
+        .MuiFormLabel-colorSecondary.Mui-focused {
+            color: #f50057;
+        }
+        .MuiFormLabel-asterisk.Mui-error {
+            color: #f44336;
+        }
+    </style>
+    <style data-jss="" data-meta="MuiInputLabel">
+        .MuiInputLabel-root {
+            display: block;
+            transform-origin: top left;
+        }
+        .MuiInputLabel-formControl {
+            top: 0;
+            left: 0;
+            position: absolute;
+            transform: translate(0, 24px) scale(1);
+        }
+        .MuiInputLabel-marginDense {
+            transform: translate(0, 21px) scale(1);
+        }
+        .MuiInputLabel-shrink {
+            transform: translate(0, 1.5px) scale(0.75);
+            transform-origin: top left;
+        }
+        .MuiInputLabel-animated {
+            transition: color 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms,transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+        }
+        .MuiInputLabel-filled {
+            z-index: 1;
+            transform: translate(12px, 20px) scale(1);
+            pointer-events: none;
+        }
+        .MuiInputLabel-filled.MuiInputLabel-marginDense {
+            transform: translate(12px, 17px) scale(1);
+        }
+        .MuiInputLabel-filled.MuiInputLabel-shrink {
+            transform: translate(12px, 10px) scale(0.75);
+        }
+        .MuiInputLabel-filled.MuiInputLabel-shrink.MuiInputLabel-marginDense {
+            transform: translate(12px, 7px) scale(0.75);
+        }
+        .MuiInputLabel-outlined {
+            z-index: 1;
+            transform: translate(14px, 20px) scale(1);
+            pointer-events: none;
+        }
+        .MuiInputLabel-outlined.MuiInputLabel-marginDense {
+            transform: translate(14px, 12px) scale(1);
+        }
+        .MuiInputLabel-outlined.MuiInputLabel-shrink {
+            transform: translate(14px, -6px) scale(0.75);
+        }
+    </style>
+    <style data-jss="" data-meta="MuiSvgIcon">
+        .MuiSvgIcon-root {
+            fill: currentColor;
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            font-size: 1.5rem;
+            transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .MuiSvgIcon-colorPrimary {
+            color: #3f51b5;
+        }
+        .MuiSvgIcon-colorSecondary {
+            color: #f50057;
+        }
+        .MuiSvgIcon-colorAction {
+            color: rgba(0, 0, 0, 0.54);
+        }
+        .MuiSvgIcon-colorError {
+            color: #f44336;
+        }
+        .MuiSvgIcon-colorDisabled {
+            color: rgba(0, 0, 0, 0.26);
+        }
+        .MuiSvgIcon-fontSizeInherit {
+            font-size: inherit;
+        }
+        .MuiSvgIcon-fontSizeSmall {
+            font-size: 1.25rem;
+        }
+        .MuiSvgIcon-fontSizeLarge {
+            font-size: 2.1875rem;
+        }
+
+
+        .PasswordField-icon {
+            position: absolute;
+            right: 10px;
+            top: 23px;
+        }
+
+
+        .FormField {
+            margin-top: 5px;
+            position: relative;
+        }
+        .Login-input {
+            margin: 15px 0;
+        }
+        .FormField-input {
+            width: 100%;
+        }
+        .PasswordField {
+            position: relative;
+        }
+    </style>
+    <style data-jss="" data-meta="MuiFormHelperText">
+        .MuiFormHelperText-root {
+            color: rgba(0, 0, 0, 0.54);
+            margin: 0;
+            font-size: 0.75rem;
+            margin-top: 3px;
+            text-align: left;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 400;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+        }
+        .MuiFormHelperText-root.Mui-disabled {
+            color: rgba(0, 0, 0, 0.38);
+        }
+        .MuiFormHelperText-root.Mui-error {
+            color: #f44336;
+        }
+        .MuiFormHelperText-marginDense {
+            margin-top: 4px;
+        }
+        .MuiFormHelperText-contained {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+    </style>
+</head>
+<body class="Content">
+<div class="PageContent">
+    <div class="Login">
+        <div class="Login-logo"></div>
+        <div class="Login-form">
+            <form action="/oauth/login" method="post" enctype="application/x-www-form-urlencoded" autocomplete="disabled">
+                <input style="display: none" name="code" th:value="${code}"  />
+                <div class="FormField Login-input">
+                    <div class="MuiFormControl-root MuiTextField-root FormField-input"><label
+                            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+                            data-shrink="true">Email</label>
+                        <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
+                            <input aria-invalid="false" name="email" type="text"
+                                   class="MuiInputBase-input MuiInput-input" value=""></div>
+                        <p th:if="${emailError}" class="MuiFormHelperText-root Mui-error" id="name-error" th:text="${emailError}"/>
+                    </div>
+                </div>
+                <div class="PasswordField Login-input">
+                    <div class="FormField">
+                        <div class="MuiFormControl-root MuiTextField-root FormField-input"><label
+                                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+                                data-shrink="true">Password</label>
+                            <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
+                                <input aria-invalid="false" name="password" type="password"
+                                       class="MuiInputBase-input MuiInput-input" value=""></div>
+                            <p th:if="${passwordError}" class="MuiFormHelperText-root Mui-error" id="pass-error" th:text="${passwordError}"/>
+                        </div>
+                    </div>
+                    <div class="PasswordField-icon">
+                        <svg class="MuiSvgIcon-root" id="showPass" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"></path>
+                        </svg>
+                        <svg class="MuiSvgIcon-root" id="hidePass" style="display: none;" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <button class="MuiButtonBase-root MuiButton-root MuiButton-contained Login-btn MuiButton-containedPrimary"
+                        tabindex="0" type="submit"><span class="MuiButton-label">Sign In</span><span
+                        class="MuiTouchRipple-root"></span></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const nameEl = document.querySelector('input[name="email"]')
+    const passEl = document.querySelector('input[name="password"]')
+    const showPassEl = document.querySelector('#showPass')
+    const hidePassEl = document.querySelector('#hidePass')
+    const nameErrEl = document.getElementById('name-error')
+    const passErrEl = document.getElementById('pass-error')
+
+    const storedName = localStorage.getItem('storedName');
+
+    if(storedName){
+        nameEl.value = storedName;
+    }
+
+
+    const handleChange = (e) => {
+        const type = e.target.name;
+        if(type === 'email'){
+            localStorage.setItem('storedName', e.target.value);
+            if(nameErrEl){
+                nameErrEl.style.display = 'none'
+            }
+        }
+        if(type === 'password' && passErrEl){
+            passErrEl.style.display = 'none'
+        }
+    }
+
+    nameEl.addEventListener('keyup', handleChange)
+    passEl.addEventListener('keyup', handleChange)
+    showPassEl.addEventListener('click', () => {
+        passEl.setAttribute('type', 'text')
+        hidePassEl.style.display = 'block';
+        showPassEl.style.display = 'none';
+    })
+
+    hidePassEl.addEventListener('click', () => {
+        passEl.setAttribute('type', 'password')
+        showPassEl.style.display = 'block';
+        hidePassEl.style.display = 'none';
+    })
+
+</script>
+</body>
+</html>
