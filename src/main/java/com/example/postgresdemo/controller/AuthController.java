@@ -3,7 +3,9 @@ package com.example.postgresdemo.controller;
 import com.example.postgresdemo.model.User;
 import com.example.postgresdemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
@@ -11,7 +13,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
+import java.net.URI;
 
 class Test {
         private String email;
@@ -61,27 +65,32 @@ public class AuthController {
 
         @GetMapping("/authorize")
         public ModelAndView authorize(Model model) {
-                ModelAndView mav = new ModelAndView("login");
-                mav.addObject("code", "ALLO");
-                mav.addObject("passwordError", "ALLO");
-                return mav;
+                ModelAndView loginTemplate = new ModelAndView("login");
+                loginTemplate.addObject("code", "ALLO");
+                return loginTemplate;
         }
 
         @PostMapping(path = "/login",
                 consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                 produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-        public String login(Test params) {
+        public ModelAndView login(Test params) {
 
                 User user = userRepository.findByEmail(params.getEmail());
+                ModelAndView loginTemplate = new ModelAndView("login");
+                loginTemplate.addObject("code", params.getCode());
+
                 if(user == null){
-                        return "Not found";
+                        loginTemplate.addObject("emailError", "User with this email was not found");
+                        return loginTemplate;
                 }
                 if(!b.matches(params.getPassword(), user.getPassword())){
-                        return "Invalid password";
+                        loginTemplate.addObject("passwordError", "Password Incorrect");
+                        return loginTemplate;
                 }
-                System.out.println("LOOOG" + user.getId());
-                System.out.println("LOOOG" + params.getEmail());
-                System.out.println("LOOOG" + params.getPassword());
-                return "Auhtorized";
+
+                String externalUrl = "https://google.com";
+                return new ModelAndView("redirect:" + externalUrl);
+
         }
+
 }
