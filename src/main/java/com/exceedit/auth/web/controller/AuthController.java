@@ -61,7 +61,6 @@ public class AuthController {
 //                        loginTemplate.addObject("passwordError", "Password Incorrect");
 //                        return loginTemplate;
 //                }
-
                 UsernamePasswordAuthenticationToken authReq =
                         new UsernamePasswordAuthenticationToken(params.getEmail(), params.getPassword());
                 Authentication auth = authManager.authenticate(authReq);
@@ -71,7 +70,7 @@ public class AuthController {
                 session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
 
                 String externalUrl = "https://google.com";
-                return new ModelAndView("redirect:" + externalUrl);
+                return new ModelAndView("redirect:" + "/");
 
         }
 
