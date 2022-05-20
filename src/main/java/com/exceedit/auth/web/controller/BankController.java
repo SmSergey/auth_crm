@@ -28,8 +28,28 @@ public class BankController {
         logger.warn("TAG", username);
         System.out.println("LOOOG   --- " + principal);
         logger.info("Transfer to {}", 45);
+        return "HELLOPUB";
+    }
+
+
+    @RequestMapping(value = "/private", method = RequestMethod.GET)
+    @ResponseBody
+    public String transferPrivate() {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        } else {
+            System.out.println("LOOOG" + 1111);
+            username = principal.toString();
+        }
+        logger.warn("TAG", username);
+        System.out.println("LOOOG   --- " + principal);
+        logger.info("Transfer to {}", 45);
         return "HELLO";
     }
+
 
     // write - just for test
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)

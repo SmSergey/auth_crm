@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import javax.ws.rs.GET;
+
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -22,9 +24,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers( "/private").fullyAuthenticated()
                 .and()
-                .addFilterBefore(
-        customAuthFilter(), BasicAuthenticationFilter.class)
+//                .addFilterBefore(
+//                        customAuthFilter(), BasicAuthenticationFilter.class)
                 .formLogin()
                 .loginPage("/oauth/authorize")
                 .failureUrl("/login?error=true")
@@ -68,8 +71,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new MySimpleUrlAuthenticationSuccessHandler();
     }
 
-    @Bean
-    public CustomHeaderAuthFilter customAuthFilter(){
-        return new CustomHeaderAuthFilter();
-    }
+//    @Bean
+//    public CustomHeaderAuthFilter customAuthFilter(){
+//        return new CustomHeaderAuthFilter();
+//    }
 }
