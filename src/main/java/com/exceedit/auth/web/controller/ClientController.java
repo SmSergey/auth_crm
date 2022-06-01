@@ -26,7 +26,7 @@ public class ClientController {
 //    private PasswordEncoder passwordEncoder;
 
     @GetMapping("")
-    public ResponseEntity<Response> getUsers(Pageable pageable) {
+    public ResponseEntity<Response> getItems(Pageable pageable) {
         List<Client> items = clientRepository.findAll();
         Response resp = new Response(items);
         return ResponseEntity.ok(resp);

@@ -23,15 +23,15 @@ public class Client {
 
     @NotBlank
     @Column(columnDefinition = "text", unique = true)
-    private String client_id;
+    private String clientId;
 
     @NotBlank
     @Column(columnDefinition = "text", unique = true)
-    private String client_secret;
+    private String clientSecret;
 
     @NotBlank
     @Column(columnDefinition = "text")
-    private String client_name;
+    private String name;
 
     @Column(columnDefinition = "text")
     private String description;
@@ -44,29 +44,6 @@ public class Client {
         this.id = id;
     }
 
-    public String getClient_id() {
-        return client_id;
-    }
-
-    public void setClient_id(String client_id) {
-        this.client_id = client_id;
-    }
-
-    public String getClient_secret() {
-        return client_secret;
-    }
-
-    public void setClient_secret(String client_secret) {
-        this.client_secret = client_secret;
-    }
-
-    public String getClient_name() {
-        return client_name;
-    }
-
-    public void setClient_name(String client_name) {
-        this.client_name = client_name;
-    }
 
     public String getDescription() {
         return description;
@@ -74,5 +51,29 @@ public class Client {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
