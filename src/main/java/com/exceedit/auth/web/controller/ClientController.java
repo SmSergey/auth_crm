@@ -4,6 +4,7 @@ import com.exceedit.auth.exception.ResourceNotFoundException;
 import com.exceedit.auth.model.Client;
 import com.exceedit.auth.repository.ClientRepository;
 import com.exceedit.auth.util.Response;
+import com.exceedit.auth.web.dto.CreateClientDTO;
 import com.exceedit.auth.web.dto.CreateUserDTO;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -33,12 +35,20 @@ public class ClientController {
     }
 
     @PostMapping("")
-    public Client createItem(@Valid @RequestBody CreateUserDTO params) throws IllegalAccessException, InstantiationException {
+    public Client createItem(@Valid @RequestBody CreateClientDTO params) throws IllegalAccessException, InstantiationException {
         Client user = new Client();
         user = mergeDiff(user, params);
 //        user.setPassword(passwordEncoder.encode(params.getPassword()));
 //        System.out.println(user.getPassword());
         return clientRepository.save(user);
+    }
+
+    @DeleteMapping("/{id}")
+    public String removeItem(@PathVariable Long id) throws IllegalAccessException, InstantiationException {
+        clientRepository.deleteById(id);
+//        user.setPassword(passwordEncoder.encode(params.getPassword()));
+//        System.out.println(user.getPassword());
+        return "REMOVED";
     }
 
     @PutMapping("/{id}")

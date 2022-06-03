@@ -36,6 +36,11 @@ public class Client {
     @Column(columnDefinition = "text")
     private String description;
 
+    @Column(columnDefinition = "varchar[]")
+    private String[] allowedOrigin;
+    @Column(columnDefinition = "varchar[]")
+    private String[] redirectUris;
+
     public Long getId() {
         return id;
     }
@@ -75,5 +80,21 @@ public class Client {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String[] getRedirectUris() {
+        return redirectUris;
+    }
+
+    public void setRedirectUris(String[] redirectUris) {
+        this.redirectUris = redirectUris;
+    }
+
+    public String[] getAllowedOrigin() {
+        return allowedOrigin;
+    }
+
+    public void setAllowedOrigin(String[] allowedOrigin) {
+        this.allowedOrigin = allowedOrigin;
     }
 }

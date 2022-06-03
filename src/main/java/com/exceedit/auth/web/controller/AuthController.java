@@ -1,6 +1,8 @@
 package com.exceedit.auth.web.controller;
 
+import com.exceedit.auth.model.Client;
 import com.exceedit.auth.model.User;
+import com.exceedit.auth.repository.ClientRepository;
 import com.exceedit.auth.repository.UserRepository;
 import com.exceedit.auth.web.dto.AuthParamsDto;
 import org.springframework.security.core.Authentication;
@@ -28,6 +30,9 @@ public class AuthController {
         @Autowired
         private UserRepository userRepository;
 
+        @Autowired
+        private ClientRepository clientRepository;
+
 //        @Autowired
 //        private PasswordEncoder passwordEncoder;
 
@@ -49,6 +54,9 @@ public class AuthController {
         public ModelAndView login(AuthParamsDto params, final HttpServletRequest request) {
 
                 User user = userRepository.findByEmail(params.getEmail());
+                Client client = clientRepository.findByClientId(params.getClientId());
+                System.out.println("LOOOG" + params.getClientId());
+                System.out.println("LOOOG" + client.getName());
 
                 ModelAndView loginTemplate = new ModelAndView("login");
                 loginTemplate.addObject("code", params.getCode());

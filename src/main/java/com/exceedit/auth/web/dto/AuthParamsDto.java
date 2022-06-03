@@ -4,6 +4,10 @@ public class AuthParamsDto {
     private String password;
     private String code;
 
+    private String clientId;
+
+    private String clientSecret;
+
     AuthParamsDto(){
 
     }
@@ -30,5 +34,21 @@ public class AuthParamsDto {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
