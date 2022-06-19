@@ -8,7 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clients")
 @TypeDef(typeClass = JsonType.class, name = "json")
 @DynamicUpdate
 public class Client {
