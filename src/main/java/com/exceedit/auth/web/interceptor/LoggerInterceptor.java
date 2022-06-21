@@ -1,6 +1,5 @@
 package com.exceedit.auth.web.interceptor;
 
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -14,26 +13,17 @@ public class LoggerInterceptor implements HandlerInterceptor {
 
     private static Logger log = LoggerFactory.getLogger(LoggerInterceptor.class);
 
-    /**
-     * Executed before actual handler is executed
-     **/
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
         log.info("[preHandle][" + request + "]" + "[" + request.getMethod() + "]" + request.getRequestURI() + getParameters(request));
         return true;
     }
 
-    /**
-     * Executed before after handler is executed
-     **/
     @Override
     public void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final ModelAndView modelAndView) throws Exception {
         log.info("[postHandle][" + request + "]");
     }
 
-    /**
-     * Executed after complete request is finished
-     **/
     @Override
     public void afterCompletion(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final Exception ex) throws Exception {
         if (ex != null)
@@ -61,8 +51,6 @@ public class LoggerInterceptor implements HandlerInterceptor {
 
         final String ip = request.getHeader("X-FORWARDED-FOR");
         final String ipAddr = (ip == null) ? getRemoteAddr(request) : ip;
-        if (!Strings.isNullOrEmpty(ipAddr))
-            posted.append("&_psip=" + ipAddr);
         return posted.toString();
     }
 

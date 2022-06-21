@@ -23,8 +23,6 @@ public class MvcConfig implements WebMvcConfigurer {
         super();
     }
 
-    // API
-
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/anonymous.html");

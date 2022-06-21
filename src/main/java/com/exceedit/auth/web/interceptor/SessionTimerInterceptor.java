@@ -20,9 +20,6 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
     @Autowired
     private HttpSession session;
 
-    /**
-     * Executed before actual handler is executed
-     **/
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
         log.info("Pre handle method - check handling start time");
@@ -42,9 +39,6 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    /**
-     * Executed before after handler is executed
-     **/
     @Override
     public void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler, final ModelAndView model) throws Exception {
         log.info("Post handle method - check execution time of handling");

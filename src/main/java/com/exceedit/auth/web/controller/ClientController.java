@@ -5,8 +5,6 @@ import com.exceedit.auth.model.Client;
 import com.exceedit.auth.repository.ClientRepository;
 import com.exceedit.auth.util.Response;
 import com.exceedit.auth.web.dto.CreateClientDTO;
-import com.exceedit.auth.web.dto.CreateUserDTO;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -23,9 +20,6 @@ import java.util.Optional;
 public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
-
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
 
     @GetMapping("")
     public ResponseEntity<Response> getItems(Pageable pageable) {
@@ -38,29 +32,22 @@ public class ClientController {
     public Client createItem(@Valid @RequestBody CreateClientDTO params) throws IllegalAccessException, InstantiationException {
         Client user = new Client();
         user = mergeDiff(user, params);
-//        user.setPassword(passwordEncoder.encode(params.getPassword()));
-//        System.out.println(user.getPassword());
         return clientRepository.save(user);
     }
 
     @DeleteMapping("/{id}")
-    public String removeItem(@PathVariable Long id) throws IllegalAccessException, InstantiationException {
+    public String removeItem(@PathVariable Long id) {
         clientRepository.deleteById(id);
-//        user.setPassword(passwordEncoder.encode(params.getPassword()));
-//        System.out.println(user.getPassword());
         return "REMOVED";
     }
 
     @PutMapping("/{id}")
-    public Client updateItem(@PathVariable Long id, @Valid @RequestBody Client user) throws Exception {
-        System.out.println("start");
+    public Client updateItem(@PathVariable Long id, @Valid @RequestBody Client user) {
         return clientRepository.findById(id).map(item -> {
                     try {
                         Client data = merge(item, user);
                         return clientRepository.save(data);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException | InstantiationException e) {
                         throw new RuntimeException(e);
                     }
                 })

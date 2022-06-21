@@ -3,76 +3,51 @@ package com.exceedit.auth.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import javax.ws.rs.GET;
 
 @Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
-    @Bean("authenticationManager")
     @Override
+    @Bean("authenticationManager")
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+        http.exceptionHandling().accessDeniedHandler(new AccessDeniedHandler());
+
         http
-                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers( "/private").fullyAuthenticated()
-                .and()
-//                .addFilterBefore(
-//                        customAuthFilter(), BasicAuthenticationFilter.class)
+                .antMatchers("/private")
+                .authenticated();
+        http
                 .formLogin()
+                .loginPage("/oauth/login")
                 .loginPage("/oauth/authorize")
                 .failureUrl("/login?error=true")
-                .and()
-                .authorizeRequests()
-//                .antMatchers("/").permitAll().anyRequest().authenticated()
-                .and()
+                .permitAll();
+        http
                 .sessionManagement()
-                .sessionFixation().none()
-                .and()
+                .sessionFixation()
+                .none();
+        http
                 .logout()
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll();
-//------------------------------------------------------------------------------------------------------
-//                .authorizeRequests()
-//                .antMatchers("/anonymous*").anonymous()
-//                .antMatchers("/oauth*").permitAll()
-////                .anyRequest().authenticated()
-//                .anyRequest().permitAll()
-
-//            .and()
-//            .formLogin()
-//                .loginPage("/oauth/authorize").permitAll()
-//                .loginProcessingUrl("/oauth/login")
-//                .successHandler(myAuthenticationSuccessHandler())
-//                .failureUrl("/login.html?error=true")
-//
-//            .and()
-//                .logout().deleteCookies("JSESSIONID")
-//
-//            .and()
-//                .rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400)
-//
-//            .and()
-//                .csrf().disable()
-//            ;
+                .deleteCookies("JSESSIONID");
     }
+
     @Bean
-    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
         return new MySimpleUrlAuthenticationSuccessHandler();
     }
-
-//    @Bean
-//    public CustomHeaderAuthFilter customAuthFilter(){
-//        return new CustomHeaderAuthFilter();
-//    }
 }

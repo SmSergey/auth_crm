@@ -1,9 +1,10 @@
 package com.exceedit.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import lombok.Data;
 import org.hibernate.annotations.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -11,13 +12,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 
 @Entity
+@Data
 @Table(name = "users")
 @TypeDef(typeClass = JsonType.class, name = "json")
 @DynamicUpdate
-public class User{
+public class User {
 
     @Id
     @GeneratedValue(generator = "user_generator")
@@ -61,7 +62,7 @@ public class User{
 
     @Type(type = "json")
     @Column(columnDefinition = "jsonb")
-        private String permissions;
+    private String permissions;
 
 
     @Column(columnDefinition = "boolean default false")
@@ -84,133 +85,48 @@ public class User{
     @Column(columnDefinition = "boolean default false")
     private Boolean deleted;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public static class UserPrincipal implements UserDetails {
 
-    public String getEmail() {
-        return email;
-    }
+        private User user;
 
-    public void setEmail(String email){
-        this.email = email;
-    }
+        public UserPrincipal(User user) {
+            this.user = user;
+        }
 
-    @JsonIgnore
-    public String getVerificationCode() {
-        return verificationCode;
-    }
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return null;
+        }
 
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
-    }
+        @Override
+        public String getPassword() {
+            return this.user.getPassword();
+        }
 
-    @JsonIgnore
-    public String getPassword() {
-        return password;
-    }
+        @Override
+        public String getUsername() {
+            return this.user.getEmail();
+        }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+        @Override
+        public boolean isAccountNonExpired() {
+            return false;
+        }
 
-    public String getNewEmail() {
-        return newEmail;
-    }
+        @Override
+        public boolean isAccountNonLocked() {
+            return false;
+        }
 
-    public void setNewEmail(String newEmail) {
-        this.newEmail = newEmail;
-    }
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return false;
+        }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Boolean getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Boolean employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public Boolean getHasImage() {
-        return hasImage;
-    }
-
-    public void setHasImage(Boolean hasImage) {
-        this.hasImage = hasImage;
-    }
-
-    public String getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
+        @Override
+        public boolean isEnabled() {
+            return false;
+        }
     }
 }
