@@ -37,9 +37,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.exceptionHandling().accessDeniedHandler(new AccessDeniedHandler());
-
+        http
+                .csrf()
+                .disable();
         http
                 .authorizeRequests()
                 .antMatchers("/private")
@@ -59,8 +59,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .none();
         http
                 .logout()
+                .logoutUrl("/oauth/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
+        http
+                .exceptionHandling()
+                .accessDeniedPage("/access-denied");
     }
 
     @Bean

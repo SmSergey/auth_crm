@@ -28,4 +28,9 @@ public class BankController {
     public ModelAndView notFoundPage() {
         return new ModelAndView("error-404");
     }
+
+    @GetMapping(path = "/access-denied")
+    public ModelAndView accessDeniedPage() {
+        return new ModelAndView("access-denied-page");
+    }
 }

@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 
 @RestController
@@ -39,10 +40,15 @@ public class AuthController {
     private AuthenticationManager authManager;
 
     @RequestMapping("/authorize")
-    public ModelAndView authorize(Model model) {
+    public ModelAndView authorize(Model model, final HttpServletRequest request) {
         ModelAndView loginTemplate = new ModelAndView("login");
         loginTemplate.addObject("code", "ALLO");
         return loginTemplate;
+    }
+
+    @GetMapping(path = "/logout")
+    public ModelAndView logOut() {
+        return redirectToLogin();
     }
 
     @PostMapping(path = "/login",
@@ -73,8 +79,8 @@ public class AuthController {
         return new ModelAndView("redirect:" + "/");
     }
 
-    @RequestMapping("**")
-    public ModelAndView redirectToLogin(Model model) {
+    @RequestMapping("/**")
+    public ModelAndView redirectToLogin() {
         ModelAndView loginTemplate = new ModelAndView("login");
         loginTemplate.addObject("code", "ALLO");
         return loginTemplate;

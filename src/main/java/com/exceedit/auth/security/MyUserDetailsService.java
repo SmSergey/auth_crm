@@ -23,6 +23,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private final String HASH_ALGORITHM_SHA256 = "{bcrypt}";
     private final String ADMIN_ROLE = "ADMIN";
+    private final String USER_ROLE = "USER";
     private final Map<String, User> roles = new HashMap<>();
 
     @PostConstruct
