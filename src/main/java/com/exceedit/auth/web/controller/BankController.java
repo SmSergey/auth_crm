@@ -5,21 +5,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class BankController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
-    public String transfer() {
-        return "HELLO PUBLIC PAGE";
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ModelAndView transfer() {
+        return new ModelAndView("public-page");
     }
 
+    @ResponseBody
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/private", method = RequestMethod.GET)
-    @ResponseBody
-    public String transferPrivate() {
-        return "HELLO PRIVATE ONE";
+    public ModelAndView transferPrivate() {
+        return new ModelAndView("admin-page");
+    }
+
+    @RequestMapping(value = "/**", method = RequestMethod.GET)
+    public ModelAndView notFoundPage() {
+        return new ModelAndView("error-404");
     }
 }

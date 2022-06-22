@@ -37,24 +37,24 @@ public class UserInterceptor implements HandlerInterceptor {
     }
 
     private void addToModelUserDetails(HttpSession session) {
-        log.info("================= addToModelUserDetails ============================");
+        log.info("================= addToModelUserDetails1 ============================");
         String loggedUsername = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
         session.setAttribute("username", loggedUsername);
         log.info("user(" + loggedUsername + ") session : " + session);
-        log.info("================= addToModelUserDetails ============================");
+        log.info("================= addToModelUserDetails2 ============================");
 
     }
 
     private void addToModelUserDetails(ModelAndView model) {
-        log.info("================= addToModelUserDetails ============================");
-        String loggedUsername = SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
-        model.addObject("loggedUsername", loggedUsername);
-        log.trace("session : " + model.getModel());
-        log.info("================= addToModelUserDetails ============================");
+        log.info("================= addToModelUserDetails11 ============================");
+//        String loggedUsername = SecurityContextHolder.getContext()
+//                .getAuthentication()
+//                .getName();
+//        model.addObject("loggedUsername", loggedUsername);
+//        log.trace("session : " + model.getModel());
+        log.info("================= addToModelUserDetails 22============================");
 
     }
 

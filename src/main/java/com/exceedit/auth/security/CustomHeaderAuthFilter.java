@@ -19,11 +19,6 @@ public class CustomHeaderAuthFilter extends GenericFilterBean {
         var request = (HttpServletRequest) servletRequest;
         var response = (HttpServletResponse) servletResponse;
 
-        //if header is missing , send un-athorized error back
-  System.out.println("LOOOG" + " HERE");
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        } else {
-            filterChain.doFilter(servletRequest, servletResponse);
-//        }
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 }

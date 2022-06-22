@@ -5,9 +5,11 @@ import com.exceedit.auth.exception.ResourceNotFoundException;
 import com.exceedit.auth.model.User;
 import com.exceedit.auth.repository.UserRepository;
 import com.exceedit.auth.util.Response;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.bson.types.ObjectId;
 
@@ -31,10 +33,11 @@ public class UserController {
 
     @PostMapping("")
     public User createUser(@Valid @RequestBody CreateUserDTO params) throws IllegalAccessException, InstantiationException {
-        User user = new User();
-        user = mergeDiff(user, params);
+        val user = mergeDiff(new User(), params);
+
         user.set_id(new ObjectId().toString());
-        System.out.println(user.getPassword());
+        user.setPassword(getBCryptHash(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -44,9 +47,7 @@ public class UserController {
                     try {
                         User data = merge(item, user);
                         return userRepository.save(data);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException | InstantiationException e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -76,7 +77,9 @@ public class UserController {
 
     public <T, K> T mergeDiff(T local, K remote) throws IllegalAccessException, InstantiationException {
         Class<?> clazz = local.getClass();
+
         Class<?> classRemote = remote.getClass();
+
         Object merged = clazz.newInstance();
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
@@ -92,5 +95,10 @@ public class UserController {
             }
         }
         return (T) merged;
+    }
+
+    private String getBCryptHash(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+        return encoder.encode(password);
     }
 }

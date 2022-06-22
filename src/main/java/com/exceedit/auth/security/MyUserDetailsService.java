@@ -21,7 +21,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private final String HASH_ALGORITHM_SHA256 = "{sha256}";
+    private final String HASH_ALGORITHM_SHA256 = "{bcrypt}";
     private final String ADMIN_ROLE = "ADMIN";
     private final Map<String, User> roles = new HashMap<>();
 
@@ -40,8 +40,9 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        val user = userRepository.findByEmail(email);
-        return roles.get("admin");
+        User user = roles.get("admin");
+        return new User(user.getUsername(), user.getPassword(), user.getAuthorities());
+
     }
 
     private List<GrantedAuthority> getAuthority(String role) {

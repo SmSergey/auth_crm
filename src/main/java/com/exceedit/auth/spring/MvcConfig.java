@@ -31,6 +31,7 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/homepage.html");
         registry.addViewController("/console.html");
         registry.addViewController("/csrfHome.html");
+        registry.addViewController("/public-page.html");
     }
 
     @Bean

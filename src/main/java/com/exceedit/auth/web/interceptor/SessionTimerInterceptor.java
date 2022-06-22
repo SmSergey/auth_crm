@@ -3,6 +3,7 @@ package com.exceedit.auth.web.interceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,12 +29,15 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
         if (UserInterceptor.isUserLogged()) {
             session = request.getSession();
             log.info("Time since last request in this session: {} ms", System.currentTimeMillis() - request.getSession()
-                .getLastAccessedTime());
+                    .getLastAccessedTime());
             if (System.currentTimeMillis() - session.getLastAccessedTime() > MAX_INACTIVE_SESSION_TIME) {
                 log.warn("Logging out, due to inactive session");
-                SecurityContextHolder.clearContext();
-                request.logout();
-                response.sendRedirect("/spring-security-rest-full/logout");
+                try {
+                    request.logout();
+                } finally {
+                    SecurityContextHolder.clearContext();
+                }
+                response.sendRedirect("/oauth/authorization");
             }
         }
         return true;
