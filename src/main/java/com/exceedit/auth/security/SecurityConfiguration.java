@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/private")
-                .authenticated();
+                .fullyAuthenticated();
 
         http
                 .authorizeRequests()

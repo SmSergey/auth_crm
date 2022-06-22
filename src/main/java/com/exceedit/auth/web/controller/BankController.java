@@ -24,13 +24,14 @@ public class BankController {
         return new ModelAndView("admin-page");
     }
 
-    @RequestMapping(value = "/**", method = RequestMethod.GET)
-    public ModelAndView notFoundPage() {
-        return new ModelAndView("error-404");
-    }
-
     @GetMapping(path = "/access-denied")
     public ModelAndView accessDeniedPage() {
         return new ModelAndView("access-denied-page");
+    }
+
+    //global not found page
+    @GetMapping(path = "/**")
+    public ModelAndView errorPage() {
+        return new ModelAndView("error-404");
     }
 }

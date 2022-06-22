@@ -55,7 +55,6 @@ public class UserInterceptor implements HandlerInterceptor {
 //        model.addObject("loggedUsername", loggedUsername);
 //        log.trace("session : " + model.getModel());
         log.info("================= addToModelUserDetails 22============================");
-
     }
 
     public static boolean isRedirectView(ModelAndView mv) {
