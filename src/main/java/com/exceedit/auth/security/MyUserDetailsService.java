@@ -28,15 +28,15 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @PostConstruct
     public void init() {
-        val users = userRepository.findAll();
-        users.forEach(user -> {
-            roles.put("admin", new User(
-                    user.getEmail(),
-                    //TODO"{ENCODE_ALGORITHM}" + user.getPassword(),
-                    "{noop}" + user.getPassword(),
-                    getAuthority(ADMIN_ROLE)
-            ));
-        });
+//        val users = userRepository.findAll();
+//        users.forEach(user -> {
+//            roles.put("admin", new User(
+//                    user.getEmail(),
+//                    //TODO"{ENCODE_ALGORITHM}" + user.getPassword(),
+//                    "{noop}" + user.getPassword(),
+//                    getAuthority(ADMIN_ROLE)
+//            ));
+//        });
     }
 
     @Override
