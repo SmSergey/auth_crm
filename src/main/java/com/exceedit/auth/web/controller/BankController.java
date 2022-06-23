@@ -12,26 +12,20 @@ public class BankController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ResponseBody
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping("/")
     public ModelAndView transfer() {
         return new ModelAndView("public-page");
     }
 
     @ResponseBody
     @PreAuthorize("hasAuthority('ADMIN')")
-    @RequestMapping(value = "/private", method = RequestMethod.GET)
+    @GetMapping("/private")
     public ModelAndView transferPrivate() {
         return new ModelAndView("admin-page");
     }
 
-    @GetMapping(path = "/access-denied")
+    @GetMapping("/access-denied")
     public ModelAndView accessDeniedPage() {
-        return new ModelAndView("access-denied-page");
-    }
-
-    //global not found page
-    @GetMapping(path = "/**")
-    public ModelAndView errorPage() {
-        return new ModelAndView("error-404");
+        return new ModelAndView("403");
     }
 }

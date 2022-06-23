@@ -20,8 +20,4 @@ public class CreateClientDTO {
     private String[] allowedOrigin;
 
     private String[] redirectUris;
-
-    public String getName() {
-        return name;
-    }
 }

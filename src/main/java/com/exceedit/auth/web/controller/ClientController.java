@@ -30,9 +30,10 @@ public class ClientController {
 
     @PostMapping("")
     public Client createItem(@Valid @RequestBody CreateClientDTO params) throws IllegalAccessException, InstantiationException {
-        Client user = new Client();
-        user = mergeDiff(user, params);
-        return clientRepository.save(user);
+        Client client = new Client();
+
+        client = mergeDiff(client, params);
+        return clientRepository.save(client);
     }
 
     @DeleteMapping("/{id}")

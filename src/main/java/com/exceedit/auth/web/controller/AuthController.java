@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,11 +33,14 @@ public class AuthController {
     @Resource(name = "authenticationManager")
     private AuthenticationManager authManager;
 
-    @RequestMapping("/authorize")
-    public ModelAndView authorize(Model model, final HttpServletRequest request) {
-        ModelAndView loginTemplate = new ModelAndView("login");
-        loginTemplate.addObject("code", "ALLO");
-        return loginTemplate;
+    @GetMapping("/authorize")
+    public ModelAndView authorize(
+            @RequestParam("client_id") String clientId,
+            @RequestParam("redirect_url") String redirectUrl,
+            @RequestParam("response_type") String responseType,
+            @RequestParam("scope") String scope
+    ) {
+        return new ModelAndView("login");
     }
 
     @GetMapping(path = "/logout")
@@ -52,6 +54,7 @@ public class AuthController {
     public ModelAndView login(AuthParamsDto params, final HttpServletRequest request) {
 
         val user = userRepository.findByEmail(params.getEmail());
+        val client = clientRepository.findById(Long.valueOf(params.getClientId()));
 
         if (user == null) {
             val loginTemplate = new ModelAndView("login");
@@ -71,6 +74,7 @@ public class AuthController {
             session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
         }
 
-        return new ModelAndView("redirect:" + "/");
+        return new ModelAndView("authorize_client")
+                .addObject("applicationName", client.get());
     }
 }

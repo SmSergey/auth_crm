@@ -32,7 +32,6 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/console.html");
         registry.addViewController("/csrfHome.html");
         registry.addViewController("/public-page.html");
-        registry.addViewController("/access-denied-page.html");
     }
 
     @Bean
