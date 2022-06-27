@@ -26,6 +26,6 @@ public class BankController {
 
     @GetMapping("/access-denied")
     public ModelAndView accessDeniedPage() {
-        return new ModelAndView("403");
+        return new ModelAndView("errors/403");
     }
 }

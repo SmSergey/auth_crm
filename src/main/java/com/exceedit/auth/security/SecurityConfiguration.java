@@ -1,5 +1,9 @@
 package com.exceedit.auth.security;
 
+import com.exceedit.auth.repository.security.JwtTokenRepository;
+import com.exceedit.auth.security.filters.JwtCsrfFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,21 +11,22 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private JwtTokenRepository jwtTokenRepository;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver resolver;
 
     @Override
     @Bean("authenticationManager")
@@ -29,46 +34,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable();
-        http
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
+//                .addFilterAt(new JwtCsrfFilter(jwtTokenRepository, resolver), CsrfFilter.class).csrf().ignoringAntMatchers("/**")
+//                .and()
                 .authorizeRequests()
                 .antMatchers("/private")
-                .fullyAuthenticated();
-
-        http
+                .fullyAuthenticated().and()
                 .authorizeRequests()
                 .antMatchers("/")
-                .authenticated();
-        http
+                .authenticated()
+                .and()
                 .formLogin()
-                .loginPage("/oauth/authorize")
-                .permitAll();
-        http
-                .sessionManagement()
-                .sessionFixation()
-                .none();
-        http
+                .loginPage("/api/oauth")
+                .and()
                 .logout()
-                .logoutUrl("/oauth/logout")
+                .logoutUrl("/api/oauth/logout")
+                .logoutSuccessUrl("/api/oauth/login")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID");
-        http
+                .deleteCookies("JSESSIONID")
+                .and()
                 .exceptionHandling()
                 .accessDeniedPage("/access-denied");
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler myAuthenticationSuccessHandler() {
-        return new MySimpleUrlAuthenticationSuccessHandler();
     }
 }

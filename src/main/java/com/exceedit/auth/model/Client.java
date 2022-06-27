@@ -7,6 +7,7 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -43,4 +44,9 @@ public class Client {
 
     @Column(columnDefinition = "varchar[]")
     private String[] redirectUris;
+
+
+    public boolean validateSecret(@NotNull String secret) {
+        return this.getClientSecret().equals(secret);
+    }
 }

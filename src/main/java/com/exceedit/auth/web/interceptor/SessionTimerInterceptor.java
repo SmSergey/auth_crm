@@ -37,7 +37,7 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
                 } finally {
                     SecurityContextHolder.clearContext();
                 }
-                response.sendRedirect("/oauth/authorization");
+                response.sendRedirect("/api/oauth/login");
             }
         }
         return true;

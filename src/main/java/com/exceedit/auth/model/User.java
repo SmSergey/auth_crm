@@ -55,10 +55,8 @@ public class User {
     @Column(columnDefinition = "text")
     private String patronymic;
 
-
     @Column(columnDefinition = "text")
     private String fullName;
-
 
     @Type(type = "json")
     @Column(columnDefinition = "jsonb")
