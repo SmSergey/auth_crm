@@ -1,6 +1,6 @@
-package com.exceedit.auth.security;
+package com.exceedit.auth.security.services;
 
-import com.exceedit.auth.repository.UserRepository;
+import com.exceedit.auth.data.repository.UserRepository;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class userService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(MyUserDetailsService.class);
+    private final Logger logger = LoggerFactory.getLogger(userService.class);
     private final String ADMIN_ROLE = "ADMIN";
     private final String USER_ROLE = "USER";
 
@@ -31,7 +31,7 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User %s wasn't fund", email));
         }
-        return new User(user.getEmail(), "{noop}" + user.getPassword(), getAuthority(ADMIN_ROLE));
+        return new User(user.getEmail(), user.getPassword(), getAuthority(ADMIN_ROLE));
     }
 
     private List<GrantedAuthority> getAuthority(String role) {

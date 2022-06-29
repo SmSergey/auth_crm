@@ -1,4 +1,4 @@
-package com.exceedit.auth.model;
+package com.exceedit.auth.data.models;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;

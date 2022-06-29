@@ -1,6 +1,6 @@
-package com.exceedit.auth.repository;
+package com.exceedit.auth.data.repository;
 
-import com.exceedit.auth.model.Client;
+import com.exceedit.auth.data.models.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,18 +1,13 @@
 package com.exceedit.auth.web.controller;
 
-import com.exceedit.auth.exception.ResourceNotFoundException;
-import com.exceedit.auth.model.Client;
-import com.exceedit.auth.repository.ClientRepository;
-import com.exceedit.auth.util.Response;
-import com.exceedit.auth.web.dto.CreateClientDTO;
+import com.exceedit.auth.data.models.Client;
+import com.exceedit.auth.data.repository.ClientRepository;
+import com.exceedit.auth.web.dto.CreateClientParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.reflect.Field;
-import java.util.List;
 
 
 @RestController
@@ -21,15 +16,15 @@ public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
 
-    @GetMapping("")
-    public ResponseEntity<Response> getItems(Pageable pageable) {
-        List<Client> items = clientRepository.findAll();
-        Response resp = new Response(items);
-        return ResponseEntity.ok(resp);
-    }
+//    @GetMapping("")
+//    public ResponseEntity<Response> getItems(Pageable pageable) {
+//        List<Client> items = clientRepository.findAll();
+//        Response resp = new Response(items);
+//        return ResponseEntity.ok(resp);
+//    }
 
     @PostMapping("")
-    public Client createItem(@Valid @RequestBody CreateClientDTO params) throws IllegalAccessException, InstantiationException {
+    public Client createItem(@Valid @RequestBody CreateClientParams params) throws IllegalAccessException, InstantiationException {
         Client client = new Client();
 
         client = mergeDiff(client, params);
@@ -42,18 +37,18 @@ public class ClientController {
         return "REMOVED";
     }
 
-    @PutMapping("/{id}")
-    public Client updateItem(@PathVariable Long id, @Valid @RequestBody Client user) {
-        return clientRepository.findById(id).map(item -> {
-                    try {
-                        Client data = merge(item, user);
-                        return clientRepository.save(data);
-                    } catch (IllegalAccessException | InstantiationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id " + id));
-    }
+//    @PutMapping("/{id}")
+//    public Client updateItem(@PathVariable Long id, @Valid @RequestBody Client user) {
+//        return clientRepository.findById(id).map(item -> {
+//                    try {
+//                        Client data = merge(item, user);
+//                        return clientRepository.save(data);
+//                    } catch (IllegalAccessException | InstantiationException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                })
+//                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id " + id));
+//    }
 
     public <T> T merge(T local, T remote) throws IllegalAccessException, InstantiationException {
         Class<?> clazz = local.getClass();

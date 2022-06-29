@@ -1,5 +1,7 @@
 package com.exceedit.auth.utils.messages;
 
 public interface ErrorMessages {
-    String INCORRECT_AUTH = "Email or password incorrect";
+    String BAD_CREDS = "email or password incorrect";
+
+
 }

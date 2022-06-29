@@ -1,6 +1,5 @@
 package com.exceedit.auth.utils.crypto;
 
-import com.exceedit.auth.utils.crypto.Algorithms;
 import com.exceedit.auth.web.controller.AuthController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

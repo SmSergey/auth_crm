@@ -1,13 +1,15 @@
 package com.exceedit.auth.web.controller;
 
-import com.exceedit.auth.model.Code;
-import com.exceedit.auth.model.UserCode;
-import com.exceedit.auth.repository.ClientRepository;
-import com.exceedit.auth.repository.UserCodeRepository;
-import com.exceedit.auth.repository.UserRepository;
+import com.exceedit.auth.data.models.Code;
+import com.exceedit.auth.data.models.User;
+import com.exceedit.auth.data.models.UserCode;
+import com.exceedit.auth.data.repository.ClientRepository;
+import com.exceedit.auth.data.repository.UserCodeRepository;
+import com.exceedit.auth.data.repository.UserRepository;
 import com.exceedit.auth.utils.messages.ErrorMessages;
-import com.exceedit.auth.web.dto.AuthParamsDto;
+import com.exceedit.auth.web.dto.AuthParams;
 import lombok.val;
+import org.dom4j.rule.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 @RestController
-@RequestMapping(path = "api/oauth")
+@RequestMapping()
 public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -38,7 +40,7 @@ public class AuthController {
     @Autowired
     private ClientRepository clientRepository;
 
-    @Resource(name = "authenticationManager")
+    @Autowired
     private AuthenticationManager authManager;
 
     @GetMapping("/login")
@@ -56,38 +58,38 @@ public class AuthController {
                 .addObject("scope", scope);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/oauth/login")
     public ModelAndView login(
-            AuthParamsDto authParams,
+            AuthParams authParams,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        val securityContext = SecurityContextHolder.getContext();
-        val user = userRepository.findByEmail(authParams.getEmail());
-        val authToken = new UsernamePasswordAuthenticationToken(
-                authParams.getEmail(),
-                authParams.getPassword());
         try {
-            securityContext.setAuthentication(
-                    authManager.authenticate(authToken)
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authParams.getEmail(),
+                            authParams.getPassword()
+                    )
             );
         } catch (AuthenticationException err) {
             return new ModelAndView("login")
-                    .addObject("code", authParams.getCode())
-                    .addObject("emailError", ErrorMessages.INCORRECT_AUTH);
+                    .addObject("emailError", ErrorMessages.BAD_CREDS);
         }
 
-        UserCode userCode = new UserCode();
-        userCode.setUserId(user.get_id());
-        userCode.setCode(new Code().getCodeString());
+        val user = userRepository.findByEmail(authParams.getEmail());
+        val code = new Code();
 
-        userCodeRepository.save(userCode);
+        userCodeRepository.save(
+                new UserCode(user.getId(), code.getCodeString())
+        );
 
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("code")
+                .addObject("code", code.getCodeString());
     }
 
-    @GetMapping("/**")
-    public ModelAndView redirectToLogin() {
-        return new ModelAndView("redirect:/api/oauth/login");
+    @GetMapping("api/oauth/logout")
+    public ModelAndView logout() {
+        return new ModelAndView("redirect:/login");
     }
+
 }

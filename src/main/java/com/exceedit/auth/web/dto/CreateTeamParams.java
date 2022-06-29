@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class CreateTeamDTO {
+public class CreateTeamParams {
     @NotBlank
     private String name;
 

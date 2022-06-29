@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class AuthParamsDto {
+public class AuthParams {
 
     @NotBlank
     private String email;
@@ -29,6 +29,6 @@ public class AuthParamsDto {
     private String scope;
 
 
-    AuthParamsDto() {
+    AuthParams() {
     }
 }
