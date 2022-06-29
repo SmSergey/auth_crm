@@ -1,26 +1,23 @@
 package com.exceedit.auth.web.controller;
 
 import com.exceedit.auth.data.models.Code;
-import com.exceedit.auth.data.models.User;
 import com.exceedit.auth.data.models.UserCode;
 import com.exceedit.auth.data.repository.ClientRepository;
 import com.exceedit.auth.data.repository.UserCodeRepository;
 import com.exceedit.auth.data.repository.UserRepository;
+import com.exceedit.auth.utils.crypto.jwt.JwtTokenRepository;
 import com.exceedit.auth.utils.messages.ErrorMessages;
 import com.exceedit.auth.web.dto.AuthParams;
 import lombok.val;
-import org.dom4j.rule.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +40,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authManager;
 
+    @Autowired
+    private JwtTokenRepository jwtTokenRepository;
+
     @GetMapping("/login")
     public ModelAndView authorize(
             @RequestParam(name = "client_id", required = false) String clientId,
@@ -56,6 +56,11 @@ public class AuthController {
                 .addObject("redirect_url", redirectUrl)
                 .addObject("response_type", responseType)
                 .addObject("scope", scope);
+    }
+
+    @GetMapping("api/oauth/logout")
+    public ModelAndView logout() {
+        return new ModelAndView("redirect:/login");
     }
 
     @PostMapping("/api/oauth/login")
@@ -87,9 +92,21 @@ public class AuthController {
                 .addObject("code", code.getCodeString());
     }
 
-    @GetMapping("api/oauth/logout")
-    public ModelAndView logout() {
-        return new ModelAndView("redirect:/login");
+    @GetMapping("/api/oauth/tokens")
+    public String getTokens(@RequestParam String authCode, HttpServletResponse response) {
+        val userCode = userCodeRepository.findByCode(authCode);
+        if (userCode == null) {
+            response.setStatus(400);
+            return "not valid token";
+        }
+        val user = userRepository.findById(userCode.getUserId());
+        if (user.isEmpty()) {
+            response.setStatus(404);
+            return "user wasn't found";
+        } else {
+            userCodeRepository.delete(userCode);
+            val userId = user.get().getId().toString();
+            return jwtTokenRepository.generateTokens(userId);
+        }
     }
-
 }

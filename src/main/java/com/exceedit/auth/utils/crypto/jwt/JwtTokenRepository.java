@@ -2,77 +2,79 @@ package com.exceedit.auth.utils.crypto.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.Getter;
 import lombok.val;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.DefaultCsrfToken;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Objects;
 import java.util.UUID;
 
-import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 
 @Repository
-public class JwtTokenRepository implements CsrfTokenRepository {
+public class JwtTokenRepository {
 
-    @Getter
-    private String secret;
+    private Logger logger = LoggerFactory.getLogger(JwtTokenRepository.class);
 
-    private final int EXPIRATION_TIME = 30;
+    @Value("jwt.secret")
+    private String SECRET;
 
-    public JwtTokenRepository() {
-        this.secret = "SECRET";
+    @Value("#{new Long('${jwt.token.access.expiration.min}')}")
+    private Long ACCESS_TOKEN_EXPIRATION_MIN;
+
+    @Value("#{new Long('${jwt.token.refresh.expiration.hour}')}")
+    private Long REFRESH_TOKEN_EXPIRATION_HOUR;
+
+
+    public String generateTokens(String userId) {
+        try {
+            val payload = new JSONObject();
+            payload.put("userId", userId);
+
+            val accessToken = generateToken(SECRET, ACCESS_TOKEN_EXPIRATION_MIN, payload.toString());
+            val refreshToken = generateToken(SECRET, REFRESH_TOKEN_EXPIRATION_HOUR, payload.toString());
+
+            return new JSONObject()
+                    .put("accessToken", accessToken)
+                    .put("refreshToken", refreshToken)
+                    .toString();
+
+        } catch (JSONException err) {
+            logger.error("Can not create tokens, json error - " + err);
+            return null;
+        }
     }
 
-    @Override
-    public CsrfToken generateToken(HttpServletRequest httpServletRequest) {
+    public String generateToken(String secret, Long expiration, String payload) {
         val id = UUID.randomUUID()
                 .toString()
                 .replace("-", "");
 
         Date now = new Date();
         Date exp = Date.from(LocalDateTime.now()
-                .plusMinutes(EXPIRATION_TIME)
+                .plusMinutes(expiration)
                 .atZone(ZoneId.systemDefault()).toInstant());
 
-        val token = Jwts.builder()
+        return Jwts.builder()
+                .claim("user", payload)
                 .setId(id)
                 .setIssuedAt(now)
                 .setNotBefore(now)
                 .setExpiration(exp)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
-
-        return new DefaultCsrfToken("x-csrf-token", "_csrf", token);
     }
 
-    @Override
-    public void saveToken(CsrfToken csrfToken, HttpServletRequest httpServletRequest, HttpServletResponse response) {
-        if (Objects.nonNull(csrfToken)) {
-            if (!response.getHeaderNames().contains(ACCESS_CONTROL_EXPOSE_HEADERS))
-                response.addHeader(ACCESS_CONTROL_EXPOSE_HEADERS, csrfToken.getHeaderName());
+//    public void saveToken(CsrfToken csrfToken, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+//
+//    }
 
-            if (response.getHeaderNames().contains(csrfToken.getHeaderName()))
-                response.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
-            else
-                response.addHeader(csrfToken.getHeaderName(), csrfToken.getToken());
-        }
-    }
-
-    @Override
-    public CsrfToken loadToken(HttpServletRequest request) {
-        return (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-    }
-
-    public void clearToken(HttpServletResponse response) {
-        if (response.getHeaderNames().contains("x-csrf-token"))
-            response.setHeader("x-csrf-token", "");
-    }
+//    public CsrfToken loadToken(HttpServletRequest request) {
+//
+//    }
 }

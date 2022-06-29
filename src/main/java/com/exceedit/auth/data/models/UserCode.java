@@ -27,6 +27,7 @@ public class UserCode {
     private Long id;
 
     @Column(columnDefinition = "text", unique = true)
+    @Getter
     private Long userId;
 
     @NotBlank
