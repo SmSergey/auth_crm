@@ -1,29 +1,27 @@
 package com.exceedit.auth.web.controller.errors;
 
-import lombok.val;
-import org.springframework.boot.web.servlet.error.ErrorController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-public class HttpErrorHandler implements ErrorController {
+public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
+
+    private final Logger logger = LoggerFactory.getLogger(ErrorController.class);
 
     @RequestMapping(value = "/error")
-    public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
-
-        val errorMessage = request
-                .getAttribute(RequestDispatcher.ERROR_MESSAGE)
-                .toString();
+    public ModelAndView handleError(
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         switch (response.getStatus()) {
             case 400: {
-                return new ModelAndView("errors/400")
-                        .addObject("message", errorMessage);
+                return new ModelAndView("errors/400");
             }
             case 403: {
                 return new ModelAndView("errors/403");

@@ -1,8 +1,8 @@
 package com.exceedit.auth.utils.crypto;
 
-import com.exceedit.auth.web.controller.AuthController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -13,7 +13,7 @@ import java.util.Locale;
 @Service
 public class HashHelper {
 
-    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private final Logger logger = LoggerFactory.getLogger(HashHelper.class);
     private static MessageDigest mdClient;
 
     HashHelper() {
@@ -27,5 +27,10 @@ public class HashHelper {
     public static String getMD5Hash(String text) {
         mdClient.update(text.getBytes(StandardCharsets.UTF_8));
         return new String(mdClient.digest()).toUpperCase(Locale.ROOT);
+    }
+
+    public static String getBCryptHash(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+        return encoder.encode(password);
     }
 }

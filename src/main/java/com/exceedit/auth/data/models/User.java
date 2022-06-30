@@ -2,6 +2,7 @@ package com.exceedit.auth.data.models;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;
+import lombok.Setter;
 import org.hibernate.annotations.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,6 +60,7 @@ public class User {
     private String fullName;
 
     @Type(type = "json")
+    @Setter
     @Column(columnDefinition = "jsonb")
     private String permissions;
 

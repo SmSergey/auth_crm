@@ -1,4 +1,4 @@
-package com.exceedit.auth.web.dto;
+package com.exceedit.auth.web.dto.users;
 
 import lombok.Data;
 

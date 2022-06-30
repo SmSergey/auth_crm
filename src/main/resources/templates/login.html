@@ -627,10 +627,10 @@
 </head>
 <body class="Content">
 
-<div style="display:flex; width:30%;" >
-    <button><a style="text-decoration:none" href="/private">TRY ACCESS TO PRIVATE SECTION</a></button>
-    <button><a style="text-decoration:none" href="/api/oauth/logout">PERFORM LOG OUT</a></button>
-</div>
+<!--<div style="display:flex; width:30%;" >-->
+<!--    <button><a style="text-decoration:none" href="/private">TRY ACCESS TO PRIVATE SECTION</a></button>-->
+<!--    <button><a style="text-decoration:none" href="/api/oauth/logout">PERFORM LOG OUT</a></button>-->
+<!--</div>-->
 
 
 <div class="PageContent">
@@ -639,8 +639,8 @@
         <div class="Login-form">
             <form action="/api/oauth/login" method="post" enctype="application/x-www-form-urlencoded" autocomplete="disabled">
                 <input style="display: none" name="code" th:value="${code}"/>
-                <input type="hidden" name="client_id" th:value="${client_id}" >
-                <input type="hidden" name="redirect_url" th:value="${redirect_url}" >
+                <input type="hidden" name="clientID" th:value="${clientID}" >
+                <input type="hidden" name="redirectUrl" th:value="${redirectUrl}" >
                 <input type="hidden" name="response_type" th:value="${response_type}" >
                 <input type="hidden" name="scope" th:value="${scope}" >
 

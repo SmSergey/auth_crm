@@ -23,7 +23,6 @@ public class userService implements UserDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(userService.class);
     private final String ADMIN_ROLE = "ADMIN";
-    private final String USER_ROLE = "USER";
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

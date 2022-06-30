@@ -1,24 +1,23 @@
 package com.exceedit.auth.data.models;
 
-
-
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "user_code_xref")
+@Table(name = "user_tokens_xref")
 @DynamicUpdate
-public class UserCode {
+public class UserTokens {
 
-    public UserCode() {
+    public UserTokens() {
+
     }
 
-    public UserCode(Long userId, String code) {
+    public UserTokens(Long userId, String accessToken, String refreshToken){
         this.userId = userId;
-        this.code = code;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     @Id
@@ -29,9 +28,11 @@ public class UserCode {
     @Getter
     private Long userId;
 
-    @NotBlank
-    @Getter
     @Column(columnDefinition = "text", unique = true)
-    private String code;
+    @Getter
+    private String accessToken;
 
+    @Column(columnDefinition = "text", unique = true)
+    @Getter
+    private String refreshToken;
 }

@@ -2,6 +2,7 @@ package com.exceedit.auth.data.models;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.TypeDef;
 
@@ -9,7 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Data
 @Table(name = "teams")
 @TypeDef(typeClass = JsonType.class, name = "json")
 @DynamicUpdate
@@ -24,6 +24,7 @@ public class Team {
     private Long id;
 
     @NotBlank
+    @Setter
     @Column(columnDefinition = "text", unique = true)
     private String _id;
 

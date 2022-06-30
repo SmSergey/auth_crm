@@ -24,6 +24,7 @@ public class Code {
     public void generateCode() {
         val rawCodeArray = new byte[20];
         new Random().nextBytes(rawCodeArray);
-        this.codeString = Base64.encode(rawCodeArray);
+        this.codeString = Base64.encode(rawCodeArray)
+                .replace("+", "");
     }
 }

@@ -1,8 +1,9 @@
 package com.exceedit.auth.utils.crypto.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import lombok.Data;
 import lombok.val;
+import org.bson.internal.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class JwtTokenRepository {
     private Long REFRESH_TOKEN_EXPIRATION_HOUR;
 
 
-    public String generateTokens(String userId) {
+    public Tokens generateTokens(String userId) {
         try {
             val payload = new JSONObject();
             payload.put("userId", userId);
@@ -39,10 +40,7 @@ public class JwtTokenRepository {
             val accessToken = generateToken(SECRET, ACCESS_TOKEN_EXPIRATION_MIN, payload.toString());
             val refreshToken = generateToken(SECRET, REFRESH_TOKEN_EXPIRATION_HOUR, payload.toString());
 
-            return new JSONObject()
-                    .put("accessToken", accessToken)
-                    .put("refreshToken", refreshToken)
-                    .toString();
+            return new Tokens(accessToken, refreshToken);
 
         } catch (JSONException err) {
             logger.error("Can not create tokens, json error - " + err);
@@ -70,11 +68,51 @@ public class JwtTokenRepository {
                 .compact();
     }
 
-//    public void saveToken(CsrfToken csrfToken, HttpServletRequest httpServletRequest, HttpServletResponse response) {
-//
-//    }
+    public boolean isTokenValid(String tokenString) {
+        try {
+            Jwts
+                    .parser()
+                    .setSigningKey(SECRET)
+                    .parse(tokenString);
 
-//    public CsrfToken loadToken(HttpServletRequest request) {
-//
-//    }
+            return true;
+
+        } catch (ExpiredJwtException | MalformedJwtException | SignatureException | IllegalArgumentException err) {
+            if (err instanceof ExpiredJwtException) {
+                logger.error("token is expired");
+            }
+            if (err instanceof SignatureException) {
+                logger.error("token is invalid");
+            }
+            logger.error(err.getMessage());
+            return false;
+        }
+    }
+
+    public JSONObject parseToken(String tokenString) {
+        try {
+            val base64EncodedBody = tokenString.split("\\.")[1];
+            val tokenData = new JSONObject(
+                    new String(Base64.decode(base64EncodedBody))
+            );
+
+            logger.info("TOKEN data is " + tokenData);
+            return tokenData;
+
+        } catch (JSONException | ArrayIndexOutOfBoundsException err) {
+            logger.error("Couldn't parse token, err - " + err.getMessage());
+        }
+        return new JSONObject();
+    }
+
+    @Data
+    public static class Tokens {
+        private final String accessToken;
+        private final String refreshToken;
+
+        Tokens(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.exceedit.auth.web.controller;
+package com.exceedit.auth.web.controller.api;
 
 import com.exceedit.auth.data.models.Code;
 import com.exceedit.auth.data.models.UserCode;
@@ -7,23 +7,31 @@ import com.exceedit.auth.data.repository.UserCodeRepository;
 import com.exceedit.auth.data.repository.UserRepository;
 import com.exceedit.auth.utils.crypto.jwt.JwtTokenRepository;
 import com.exceedit.auth.utils.messages.ErrorMessages;
+import com.exceedit.auth.utils.messages.SuccessMessages;
+import com.exceedit.auth.web.controller.advices.annotations.ApiException;
+import com.exceedit.auth.web.controller.api.response.ApiResponse;
 import com.exceedit.auth.web.dto.AuthParams;
+import com.exceedit.auth.web.dto.ValidateTokenParams;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
-
+@ApiException
 @RestController
-@RequestMapping()
+@RequestMapping("api/oauth")
 public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -43,29 +51,11 @@ public class AuthController {
     @Autowired
     private JwtTokenRepository jwtTokenRepository;
 
-    @GetMapping("/login")
-    public ModelAndView authorize(
-            @RequestParam(name = "client_id", required = false) String clientId,
-            @RequestParam(name = "redirect_url", required = false) String redirectUrl,
-            @RequestParam(name = "response_type", required = false) String responseType,
-            @RequestParam(name = "scope", required = false) String scope,
-            HttpServletResponse response
-    ) {
-        return new ModelAndView("login")
-                .addObject("client_id", clientId)
-                .addObject("redirect_url", redirectUrl)
-                .addObject("response_type", responseType)
-                .addObject("scope", scope);
-    }
-
-    @GetMapping("api/oauth/logout")
-    public ModelAndView logout() {
-        return new ModelAndView("redirect:/login");
-    }
-
-    @PostMapping("/api/oauth/login")
+    @PostMapping(value = "/login")
     public ModelAndView login(
-            AuthParams authParams,
+             AuthParams authParams,
+            @RequestParam String redirectUrl,
+            @RequestParam String clientID,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
@@ -88,25 +78,56 @@ public class AuthController {
                 new UserCode(user.getId(), code.getCodeString())
         );
 
-        return new ModelAndView("code")
-                .addObject("code", code.getCodeString());
+        return new ModelAndView("redirect:/api/oauth/redirect?redirectUrl=" + redirectUrl + "&login_token=" + code.getCodeString());
     }
 
-    @GetMapping("/api/oauth/tokens")
-    public String getTokens(@RequestParam String authCode, HttpServletResponse response) {
+    @GetMapping("/tokens")
+    public ResponseEntity<String> getTokens(@RequestParam @NotEmpty String authCode, HttpServletResponse response) {
         val userCode = userCodeRepository.findByCode(authCode);
+        logger.info(authCode);
         if (userCode == null) {
-            response.setStatus(400);
-            return "not valid token";
+            return new ApiResponse()
+                    .setStatus(404)
+                    .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
         }
+
         val user = userRepository.findById(userCode.getUserId());
         if (user.isEmpty()) {
-            response.setStatus(404);
-            return "user wasn't found";
+            return new ApiResponse()
+                    .setStatus(404)
+                    .setMessage(ErrorMessages.USER_NOT_FOUND).build();
         } else {
             userCodeRepository.delete(userCode);
             val userId = user.get().getId().toString();
-            return jwtTokenRepository.generateTokens(userId);
+            val tokens = jwtTokenRepository.generateTokens(userId);
+
+            return new ApiResponse()
+                    .setMessage(SuccessMessages.SUCCESS)
+                    .addField("accessToken", tokens.getAccessToken())
+                    .addField("refreshToken", tokens.getRefreshToken())
+                    .setStatus(200).build();
         }
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/tokens")
+    public ResponseEntity<String> validateToken(@RequestBody @Valid ValidateTokenParams params) {
+        val accessToken = params.getAccessToken();
+
+        if (!jwtTokenRepository.isTokenValid(accessToken)) {
+            return new ApiResponse()
+                    .setStatus(403)
+                    .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
+        }
+        val tokenData = jwtTokenRepository.parseToken(accessToken);
+
+        return new ApiResponse()
+                .setStatus(200)
+                .setMessage(tokenData.toString()).build();
+    }
+
+    @GetMapping("/redirect")
+    public RedirectView oauthBackRedirect(@RequestParam String redirectUrl, @RequestParam String login_token) {
+        return new RedirectView(redirectUrl + "?login_token=" + login_token);
     }
 }
