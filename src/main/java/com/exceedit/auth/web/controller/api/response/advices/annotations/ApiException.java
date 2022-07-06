@@ -1,4 +1,4 @@
-package com.exceedit.auth.web.controller.advices.annotations;
+package com.exceedit.auth.web.controller.api.response.advices.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

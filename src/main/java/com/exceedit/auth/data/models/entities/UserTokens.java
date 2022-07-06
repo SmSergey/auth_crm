@@ -1,4 +1,4 @@
-package com.exceedit.auth.data.models;
+package com.exceedit.auth.data.models.entities;
 
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,15 +24,15 @@ public class UserTokens {
     @GeneratedValue()
     private Long id;
 
-    @Column(columnDefinition = "text", unique = true)
+    @Column(columnDefinition = "text")
     @Getter
     private Long userId;
 
-    @Column(columnDefinition = "text", unique = true)
+    @Column(columnDefinition = "text")
     @Getter
     private String accessToken;
 
-    @Column(columnDefinition = "text", unique = true)
+    @Column(columnDefinition = "text")
     @Getter
     private String refreshToken;
 }

@@ -1,6 +1,6 @@
 package com.exceedit.auth.web.controller.api;
 
-import com.exceedit.auth.data.models.Client;
+import com.exceedit.auth.data.models.entities.Client;
 import com.exceedit.auth.data.repository.ClientRepository;
 import com.exceedit.auth.utils.Utils;
 import com.exceedit.auth.utils.messages.ErrorMessages;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 
 @RestController
 @RequestMapping("clients")

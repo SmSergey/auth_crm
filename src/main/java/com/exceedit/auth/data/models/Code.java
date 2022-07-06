@@ -1,6 +1,5 @@
 package com.exceedit.auth.data.models;
 
-import com.exceedit.auth.utils.crypto.HashHelper;
 import lombok.Getter;
 import lombok.val;
 import org.bson.internal.Base64;

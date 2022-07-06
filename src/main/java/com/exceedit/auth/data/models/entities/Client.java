@@ -1,4 +1,4 @@
-package com.exceedit.auth.data.models;
+package com.exceedit.auth.data.models.entities;
 
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;

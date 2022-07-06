@@ -1,14 +1,13 @@
 package com.exceedit.auth.web.controller.api.oauth;
 
 
-import com.exceedit.auth.data.models.UserTokens;
+import com.exceedit.auth.data.models.entities.UserTokens;
 import com.exceedit.auth.data.repository.UserCodeRepository;
 import com.exceedit.auth.data.repository.UserRepository;
 import com.exceedit.auth.data.repository.UserTokensRepository;
 import com.exceedit.auth.utils.crypto.jwt.JwtTokenRepository;
-import com.exceedit.auth.utils.messages.ErrorMessages;
 import com.exceedit.auth.utils.messages.SuccessMessages;
-import com.exceedit.auth.web.controller.advices.annotations.ApiException;
+import com.exceedit.auth.web.controller.api.response.advices.annotations.ApiException;
 import com.exceedit.auth.web.controller.api.response.ApiResponse;
 import com.exceedit.auth.web.dto.oauth.OauthLoginParams;
 import lombok.val;
@@ -17,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 public class TokenController {
 
     private final Logger logger = LoggerFactory.getLogger(TokenController.class);
-    private final String AUTHORIZATION_HEADER_NAME = "Authorization";
+
+    @Value("${jwt.authorization.header.name}")
+    private String AUTHORIZATION_HEADER_NAME;
 
     @Autowired
     private JwtTokenRepository jwtTokenRepository;
@@ -43,21 +45,14 @@ public class TokenController {
     @Autowired
     private UserTokensRepository userTokensRepository;
 
-
     @PostMapping("/login")
     public ResponseEntity<String> getTokens(@RequestBody OauthLoginParams loginParams) {
         val loginToken = loginParams.getLogin_token();
         val userCode = userCodeRepository.findByCode(loginToken);
-        if (userCode == null) {
-            return new ApiResponse()
-                    .setStatus(400)
-                    .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
-        }
+        if (userCode == null) return new ApiResponse().buildAsBadJwt();
 
         val user = userRepository.findById(userCode.getUserId());
-        if (user.isEmpty()) return new ApiResponse()
-                .setStatus(404)
-                .setMessage(ErrorMessages.USER_NOT_FOUND).build();
+        if (user.isEmpty()) return new ApiResponse().buildAsUserNotFound();
 
         val userId = user.get().getId().toString();
         val tokens = jwtTokenRepository.generateTokens(userId);
@@ -103,29 +98,20 @@ public class TokenController {
     public ResponseEntity<String> checkToken(HttpServletRequest request, HttpServletResponse response) {
         val authorization = request.getHeader(AUTHORIZATION_HEADER_NAME);
         if (authorization == null || authorization.split(" ")[1] == null) {
-            return new ApiResponse()
-                    .setStatus(400)
-                    .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
+            return new ApiResponse().buildAsBadJwt();
         }
-
         val tokenString = authorization.split(" ")[1];
         val isTokenValid = jwtTokenRepository.isTokenValid(tokenString);
-        if(!isTokenValid) return new ApiResponse()
-                .setStatus(400)
-                .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
+        if (!isTokenValid) return new ApiResponse().buildAsBadJwt();
 
         val tokensRecord = userTokensRepository.findByAccessToken(tokenString);
-        if(tokensRecord == null) return new ApiResponse()
-                .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN)
-                .setStatus(400).build();
+        if (tokensRecord == null) return new ApiResponse().buildAsBadJwt();
 
         val tokenData = jwtTokenRepository.parseToken(tokenString);
         try {
             val userId = new JSONObject(tokenData.get("user").toString()).get("userId");
             val user = userRepository.findById(Long.valueOf(userId.toString()));
-            if (user.isEmpty()) return new ApiResponse()
-                    .setStatus(400)
-                    .setMessage(ErrorMessages.USER_NOT_FOUND).build();
+            if (user.isEmpty()) return new ApiResponse().buildAsUserNotFound();
 
             return new ApiResponse()
                     .setStatus(200)
@@ -145,9 +131,7 @@ public class TokenController {
 
         } catch (JSONException err) {
             logger.error("Couldn't parse token data " + err);
-            return new ApiResponse()
-                    .setStatus(400)
-                    .setMessage("token is not valid").build();
+            return new ApiResponse().buildAsBadJwt();
         }
     }
 
@@ -156,19 +140,13 @@ public class TokenController {
 
         val authorization = request.getHeader(AUTHORIZATION_HEADER_NAME);
         if (authorization == null || authorization.split(" ")[1] == null) {
-            return new ApiResponse()
-                    .setStatus(400)
-                    .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
+            return new ApiResponse().buildAsBadJwt();
         }
-
         val tokenString = authorization.split(" ")[1];
-
         val tokenRecord = userTokensRepository.findByAccessToken(tokenString);
-
-        if(tokenRecord != null) {
+        if (tokenRecord != null) {
             userTokensRepository.delete(tokenRecord);
         }
-
         return new ApiResponse()
                 .setStatus(200)
                 .shouldNotify(false)

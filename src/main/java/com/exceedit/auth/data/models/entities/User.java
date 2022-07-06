@@ -1,4 +1,4 @@
-package com.exceedit.auth.data.models;
+package com.exceedit.auth.data.models.entities;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Data;
@@ -84,6 +84,26 @@ public class User {
 
     @Column(columnDefinition = "boolean default false")
     private Boolean deleted;
+
+    @Column(columnDefinition = "text")
+    private String city;
+
+    @Column(columnDefinition = "text")
+    private String owner;
+
+    @Column(columnDefinition = "text")
+    private String director;
+
+    @Column(columnDefinition = "text")
+    private String address;
+
+    @Column(columnDefinition = "text")
+    private String employee;
+
+    @Column(columnDefinition = "text")
+    private String team;
+
+
 
 
     public static class UserPrincipal implements UserDetails {

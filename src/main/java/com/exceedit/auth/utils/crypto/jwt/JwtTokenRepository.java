@@ -1,5 +1,7 @@
 package com.exceedit.auth.utils.crypto.jwt;
 
+import com.exceedit.auth.utils.messages.ErrorMessages;
+import com.exceedit.auth.web.controller.api.response.ApiResponse;
 import io.jsonwebtoken.*;
 import lombok.Data;
 import lombok.val;
@@ -11,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -22,15 +26,17 @@ public class JwtTokenRepository {
 
     private Logger logger = LoggerFactory.getLogger(JwtTokenRepository.class);
 
-    @Value("jwt.secret")
+    @Value("${jwt.secret}")
     private String SECRET;
+
+    @Value("${jwt.authorization.header.name}")
+    private String AUTHORIZATION_HEADER_NAME;
 
     @Value("#{new Long('${jwt.token.access.expiration.min}')}")
     private Long ACCESS_TOKEN_EXPIRATION_MIN;
 
     @Value("#{new Long('${jwt.token.refresh.expiration.hour}')}")
     private Long REFRESH_TOKEN_EXPIRATION_HOUR;
-
 
     public Tokens generateTokens(String userId) {
         try {
@@ -92,17 +98,26 @@ public class JwtTokenRepository {
     public JSONObject parseToken(String tokenString) {
         try {
             val base64EncodedBody = tokenString.split("\\.")[1];
-            val tokenData = new JSONObject(
+            return new JSONObject(
                     new String(Base64.decode(base64EncodedBody))
             );
-
-            logger.info("TOKEN data is " + tokenData);
-            return tokenData;
 
         } catch (JSONException | ArrayIndexOutOfBoundsException err) {
             logger.error("Couldn't parse token, err - " + err.getMessage());
         }
         return new JSONObject();
+    }
+
+    public String fetchTokenFromRequest(HttpServletRequest request) {
+        try {
+            val authorization = request.getHeader(AUTHORIZATION_HEADER_NAME);
+            if (authorization != null && authorization.split(" ")[1] != null) {
+                return authorization.split(" ")[1];
+            }
+        } catch (Exception err) {
+            logger.error("couldn't get token, err - " + err.getMessage());
+        }
+        return null;
     }
 
     @Data

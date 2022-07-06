@@ -1,9 +1,9 @@
 package com.exceedit.auth.web.controller.api.response;
 
+import com.exceedit.auth.utils.messages.ErrorMessages;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 public class ApiResponse {
@@ -40,7 +40,19 @@ public class ApiResponse {
 
     public ResponseEntity<String> build() {
         return ResponseEntity
-                .ok().contentType(MediaType.APPLICATION_JSON)
+                .status(this.status)
                 .body(this.response.toString());
+    }
+
+    public ResponseEntity<String> buildAsBadJwt() {
+        return new ApiResponse()
+                .setStatus(403)
+                .setMessage(ErrorMessages.BAD_AUTHORIZATION_TOKEN).build();
+    }
+
+    public ResponseEntity<String> buildAsUserNotFound() {
+        return new ApiResponse()
+                .setStatus(404)
+                .setMessage(ErrorMessages.USER_NOT_FOUND).build();
     }
 }

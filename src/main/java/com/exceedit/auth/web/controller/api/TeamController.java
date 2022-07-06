@@ -1,6 +1,6 @@
 package com.exceedit.auth.web.controller.api;
 
-import com.exceedit.auth.data.models.Team;
+import com.exceedit.auth.data.models.entities.Team;
 import com.exceedit.auth.data.repository.TeamRepository;
 import com.exceedit.auth.utils.Utils;
 import com.exceedit.auth.utils.messages.ErrorMessages;
@@ -9,6 +9,8 @@ import com.exceedit.auth.web.controller.api.response.ApiResponse;
 import com.exceedit.auth.web.dto.CreateTeamParams;
 import lombok.val;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-
 @RestController
-@RequestMapping("teams")
+@RequestMapping("api/teams")
 public class TeamController {
 
     private final Logger logger = LoggerFactory.getLogger(TeamController.class);
@@ -27,13 +28,21 @@ public class TeamController {
     @Autowired
     private TeamRepository teamRepository;
 
-    @GetMapping("")
+    @RequestMapping(path = "", method = {RequestMethod.OPTIONS, RequestMethod.GET})
     public ResponseEntity<String> getTeams() {
-        val items = teamRepository.findAll();
         return new ApiResponse()
                 .setStatus(200)
-                .setMessage(SuccessMessages.SUCCESS)
-                .addField("teams", items).build();
+                .addField("data", new JSONArray()
+                        .put(new JSONObject()
+                                .put("users", new JSONArray())
+                                .put("_id", "5fd8977aec290cace76dc08d")
+                                .put("name", "Pavel Petrash Mkp")
+                                .put("city", "Майкоп")
+                                .put("users", new JSONArray())
+                                .put("users", new JSONArray())
+                        )
+
+                ).build();
     }
 
     @PostMapping("")

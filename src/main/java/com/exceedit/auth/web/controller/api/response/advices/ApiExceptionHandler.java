@@ -1,4 +1,4 @@
-package com.exceedit.auth.web.controller.advices;
+package com.exceedit.auth.web.controller.api.response.advices;
 
 import com.exceedit.auth.web.controller.api.response.ApiResponse;
 import lombok.val;
@@ -18,21 +18,24 @@ import javax.servlet.http.HttpServletRequest;
 public class ApiExceptionHandler extends ExceptionHandlerExceptionResolver {
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<String> handleBadMediaType(HttpMediaTypeNotSupportedException ex, WebRequest req) {
+    public ResponseEntity<String> handleBadMediaType(HttpMediaTypeNotSupportedException ex, WebRequest req, HttpServletRequest request) {
+        logger.error(ex.getMessage());
         return new ApiResponse()
                 .setStatus(415)
                 .setMessage(ex.getMessage()).build();
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex, WebRequest req) {
+    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex, WebRequest req, HttpServletRequest request) {
+        logger.error(ex.getMessage());
         return new ApiResponse()
                 .setStatus(400)
                 .setMessage(ex.getMessage()).build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMissingParams(MethodArgumentNotValidException ex, WebRequest req) {
+    public ResponseEntity<String> handleMissingParams(MethodArgumentNotValidException ex, WebRequest req, HttpServletRequest request) {
+        logger.error(ex.getMessage());
         val errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return new ApiResponse()
                 .setStatus(400)
@@ -41,7 +44,6 @@ public class ApiExceptionHandler extends ExceptionHandlerExceptionResolver {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleMissingParams(HttpMessageNotReadableException ex, WebRequest req, HttpServletRequest request) {
-        logger.error(request.getRequestURI());
         logger.error(ex.getMessage());
         return new ApiResponse()
                 .setStatus(400)
@@ -49,8 +51,8 @@ public class ApiExceptionHandler extends ExceptionHandlerExceptionResolver {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleMissingParams(Exception ex, WebRequest req) {
-        logger.error(ex.getClass());
+    public ResponseEntity<String> handleMissingParams(Exception ex, WebRequest req, HttpServletRequest request) {
+        logger.error(ex.getMessage());
         return new ApiResponse()
                 .setStatus(500)
                 .setMessage("internal error").build();
